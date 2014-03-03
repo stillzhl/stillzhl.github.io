@@ -1,3 +1,8 @@
+---
+layout: post
+title: Headless Browser (Selenium+PhantomJS)
+---
+
 # 搭建  Headless Browser (Selenium+PhantomJS)
 搭建Headless Brwoser，为Scrapy抓取页面服务，适用于分布式架构，在一台机器上部署之后，其他机器可通过remote方式使用。
 Phantomjs和Selenium的结合由[Ghost Driver](https://github.com/detro/ghostdriver)提供，现在这个项目已经被include到Phantomjs的官方最新版本：

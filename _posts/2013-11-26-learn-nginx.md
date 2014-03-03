@@ -1,3 +1,8 @@
+---
+layout: post
+title: Nginx 学习笔记
+---
+
 ##nginx平台初探
 ####架构
 nginx运行方式：
