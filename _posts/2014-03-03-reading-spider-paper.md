@@ -99,9 +99,11 @@ There are several types of normalization that may be performed including convers
 >
 > * Google Crawler: The original google crawler (developed at Stanford) consisted of five functional components runing in different processes. A *URL server process* read URLs out of a file and forwarded them to multiple crawler processes. Each *crawler process* ran on a different machine, was single-threaded, and used asynchronous I/O to fetch data from up to 300 web servers in parallel. The crawlers transmitted downloaded pages to a single *StoreServer process*, which compressed the pages and stored them to disk. The pages were then read back from disk by an *index process*, which extracted links from HTML pages and saved them to a different disk file. A *URL resolver process* read the link file, derelativized the URLs contained therein, and saved the absolute URLs to the disk file that was read by the URL server. 
 > * Internet Archive: The IA also used multiple machines to crawl the web. Each crawler process was assigned up to 64 sites to crawl, and no site was assigned to more than one crawler. Each single-threaded crawler process read a list of seed URLs for its assigned sites from disk into per-site queues, and then used asynchronous I/O to fetch pages from these queues in parallel. Once a page was downloaded, the crawler extracted the links contained in it. If a link referred to the site of the page it was contained in, it was added to the appropriate site queue; otherwise it was logged to disk. Periodically, a batch process merged these logged "cross-site" URLs into the site-specific seed sets, filtering out duplicates in the process.
-
+>
+>
 ###### Merctor's Architecture
 >The basic algorithm requires a number of functional components:
+>
 > * a component (called the URL frontier) for storing the list of URLs to download;
 > * a component for resolving host names into IP address;
 > * a component for downloading documents using the HTTP protocol;
