@@ -102,6 +102,11 @@ There are several types of normalization that may be performed including convers
 >
 >
 ###### Merctor's Architecture
+
+
+![](http://stillzhl.github.io/image/mercator_figure_1.jpg)
+
+
 >The basic algorithm requires a number of functional components:
 >
 > * a component (called the URL frontier) for storing the list of URLs to download;
@@ -110,8 +115,20 @@ There are several types of normalization that may be performed including convers
 > * a component for extracting links from HTML documents; and
 > * a component fro determining whether a URL has been encountered before.
 >
+>To avoid downloading this resource on every request, Mercator's HTTP Protocol module maintains a fixed-sized cache mapping host names to their robots exclusion rules.
 >Once the document has been written to RIS, the worker thread invokes the content-seen test to determine whether this document with the same content, but a different URL, has been seen before.
+>Every downloaded document has *content type*. In addition to associating schemes with protocol modules, a Mercator configuration file also associates content types with one or more *processing modules*. A processing module is an abstraction for processing downloaded documents, for instance:
+>
+>
+* extracting links from HTML pages,
+* counting the tags found in HTML pages,
+* or collecting statistics about GIF images.
+>
 >Based on the downloaded document's content type, the worker invokes the process method of each processing module associated with that content type. For example, the Link Extractor and Tag Counter processing modules in Figure 1 are used for text/html documents, and the GIF Stats module is used for image/gif documents.
->By default, a processing module for extracting links is associated with content type text/html. The process method of this module extracts all links from an HTML page. Each link is converted into an absolute URL and tested against a user-supplied URL filter to determine if it should be downloaded. If the URL passes the filter, it is submitted to the *duplicate URL eliminator*(DUE), which checks if the URL has been seen before, namely, if it is in the URL frontier or has already been downloaded. If the URL is new, it is added to the frontier.
+>By default, a processing module for extracting links is associated with content type *text/html*. The process method of this module extracts all links from an HTML page. Each link is converted into an __absolute URL__ and tested against a __user-supplied URL filter__(like RegExp) to determine if it should be downloaded. If the URL passes the filter, it is submitted to the *duplicate URL eliminator*(DUE), which checks if the URL has been seen before, namely, if it is in the URL frontier or has already been downloaded. If the URL is new, it is added to the frontier.
 >Finally, in the case of continuous crawling, the URL of the document that was just downloaded is also added back to the URL frontier. As noted earlier, a mechanism is required in the continuous crawling case for interleaving(插入) the downloading of new and old URLs. Mercator uses a randomized crawling priority-based scheme for this purpose. A standard configuration for continusus crawling typically uses a frontier implementation that attaches priorities to URLs based on their download history, and whose dequeue method is biased torards higher priority URLs. Both the degree of gias and algorithm for computing URL priorities are pluggable components. In one of our configurations, the priority of documents that do not change from one download to the next decreases over time, thereby causing them to be downloaded less frequently than documents that change often.
->Checkpointing is an important part of any long-running process such as a web crawl. By checkpointing we mean writing a representation of the crawler's stat to stable storage that, in the event of a failure, is sufficient to allow the crawler to recover its state by reading the checkpoint and to resume crawling from the exact state it was in at the time of the checkpoint. By this definition, in the event of a failure, any work performed after the most recent checkpoint is lost, but none of the work up to most recent checkpoint. In Mercator, the frequency with which the background thread performs a checkpoint is user-configurable; we typically checkpoint anywhere from 1 to 4 times per day.
+>*Checkpointing is an important part of any long-running process such as a web crawl.* By checkpointing we mean writing a representation of the crawler's stat to stable storage that, in the event of a failure, is sufficient to allow the crawler to recover its state by reading the checkpoint and to resume crawling from the exact state it was in at the time of the checkpoint. By this definition, in the event of a failure, any work performed after the most recent checkpoint is lost, but none of the work up to most recent checkpoint. In Mercator, the frequency with which the background thread performs a checkpoint is user-configurable; we typically checkpoint anywhere from 1 to 4 times per day.
+>The description so far assumed the case in which all Mercator threads are run in a single process. However, Mercator can be configured as a multi-process distributed system. In this configuration, one process is designated the __queen__(蜂王), and the others are __drones__(工蜂).Both the queen and the drones run worker threads, but only the queen runs a background thread responsible for logging statistics, terminatiing the crawl, and initiating checkpoints.
+>In its distributed configuration, the space of host names is partitioned among the queen and drone processes. Each process is responsible only for the subset of host names assigned to it. Hence the central data structures of each crawling process -- the URL frontier, the URL set maintained by the DUE, the DNS cache, etc. -- contain data only for its hosts. Put differently, the state of a Mercator crawl is fully partitioned across the queen and drone processes; there is no replication of data.
+>In a distributed crawl, when a Link Extractor extracts a URL from a downloaded page, that URL is passed through the URL Filter, into a *host splitter* component. This component checks if the URL's host name is assigned to this process or not. Those that are assigned to this process are passed on to the DUE; the others are routed to the appropriate peer process, where it is then passed to that process's DUE component. Since about *80%* of links are relative, the vast majority of discovered URLs remain local to the crawling proecss that discovered them (局部性原理). Moreover, Mercator buffers the outbound URLs so that they may be transmitted in batches for efficiency (批量转发). Figure 2 illustrates this design.
+>Designing data structures that can efficiently handle hundreds of millions of entries poses many engineering challenges. Central to these concerns are the need to balance memeory use and performance. 
