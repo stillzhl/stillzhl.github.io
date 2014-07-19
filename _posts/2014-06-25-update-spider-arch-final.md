@@ -9,7 +9,7 @@ title: Update Spider Arch Final
 
 * 网络拓扑图
     
-    ![](http://stillzhl.github.io/image/distribute-spider-topo.jpg)
+    ![](http://stillzhl.github.io/image/distribute-spider-topo.png)
 
 
 ## DevOps
