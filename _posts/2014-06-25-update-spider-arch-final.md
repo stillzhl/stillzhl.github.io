@@ -33,8 +33,8 @@ title: Update Spider Arch Final
 	
 		192.168.1.174:6979
 		
-	* 价格库存Mysql
-	
+	* 价格库存Mysql  
+
 		192.168.1.178:3306 PriceStock T_PriceStock
 		
 	* URL Mysql
