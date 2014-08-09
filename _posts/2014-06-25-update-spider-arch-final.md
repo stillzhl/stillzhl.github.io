@@ -61,6 +61,56 @@ title: Update Spider Arch Final
 
 ## DevOps
 
+* 部署一台新机器
+	
+	* 系统使用fabric来部署程序，fab file位置：
+		
+			deploy/fabfile.py
+		
+	* 脚本从git server下载最新的程序包，根据部署时需要的文件夹是否存在来判断是否新机器。若新机器则安装各种lib包，python包，成功后启用supervisord，来管理程序的执行。
+	
+			$ fab tar_latest_code deploy:b_install=True -f /path/to/fabfile.py
+
+	* 项目目录：
+		
+			/d1/zhanghaili/spider-celery
+		
+	* vitualenv 目录
+			
+			/d1/zhanghaili/list_spider_env
+	* redis 目录
+	
+			/d1/zhanghaili/spider_redis
+	
+	* log 文件（可在settings里边设置）
+		
+			/d1/zhanghaili/log/list_spider.log
+			
+	* supervisord 中各个程序的日志都在/tmp目录下
+	
+* 在命令行中启动clients
+
+	* 需将项目加入PYTHONPATH
+	
+			$ export PYTHONPATH="$PYTHONPATH:/d1/zhanghaili/spider-celery"
+	* 执行脚本
+			
+			$ source /d1/zhanghaili/list_spider_env/bin/activate
+			$ cd /d1/zhanghaili/spider-celery
+			$ python clients/ListClients.py [-s 3] [-d True]
+		or
+		
+			$ /d1/zhanghaili/list_spider_env/bin/python clients/ListClients.py [-s 3] [-d True]
+			
+* 在supervisor中启动clients		@174
+	
+		$ source /d1/zhanghaili/list_spider_env/bin/activate
+		$ cd /d1/zhanghaili/spdier-celery
+		$ supervisorctl -c service/supervisord_client.conf
+			> start list_client
+	
+
+
 * RabbitMQ
 	
 	* rabbitmq需要设置启动时需要申请文件描述符的最大使用量，过少导致hit，server挂起；rabbitmq会对能够使用的虚拟内存空间作默认设置，需要根据实际系统调整，否则也会导致hit，server挂起
@@ -119,7 +169,7 @@ title: Update Spider Arch Final
  	如果用过的socket连接不作回收，会耗尽系统的资源，导致连接ttserver等不成功
 		
 		sudo sysctl -w net.ipv4.tcp_tw_recycle=1
-		sudo sysctl -w net.ipv4.tcp_timestamps=1
+		sudo sysctl -w net.ipv4.tcp_timestamps=1 	
 		
 * 系统内软件包版本 need fix, 若想升级软件包版本，可能需要修改代码兼容新的软件包，必须测试后再上线
 
@@ -140,3 +190,8 @@ title: Update Spider Arch Final
 		35 */1 * * * cd /home/zhanghaili && fab sv_worker:action=restart,name_prefix=dp-prs
 
 * 下载worker（downloader）需采用eventlet的并发模式启动，其他worker则采用多进程的并发模式启动。若worker存在阻塞（如写文件或写数据库），则使用eventlet模式会挂起所有worker，需注意! 目前在升级了软件包之后，使用eventlet会报错，基本情况是下载的时候读取chunk package 的时候字节长度和预期的不一样，所以**改成使用多进程模型**。
+
+	
+
+
+
