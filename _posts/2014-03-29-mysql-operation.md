@@ -28,6 +28,8 @@ title: MySQL Operation
 
 #### 启动 from your own my.cnf
 
+    shell> sudo mkdir /your/mysql/data/path/
+    shell> sudo chown mysql:mysql /your/mysql/data/path/
     shell> cd /your/mysql/data/path/
     shell> su root
     shell> mysql_install_db --defaults-file=/your/own/cnf/path/my.cnf --user=mysql

@@ -103,9 +103,10 @@ title: Update Spider Arch Final
 			$ /d1/zhanghaili/list_spider_env/bin/python clients/ListClients.py [-s 3] [-d True]
 			
 * 在supervisor中启动clients		@174
-	
+		
 		$ source /d1/zhanghaili/list_spider_env/bin/activate
 		$ cd /d1/zhanghaili/spdier-celery
+		$ supervisord -c service/supervisord_client.conf
 		$ supervisorctl -c service/supervisord_client.conf
 			> start list_client
 	
@@ -156,7 +157,7 @@ title: Update Spider Arch Final
 
 * Redis 
 
-	* @162 or @165: /d1/zhanghaili/spider_redis/
+	* @162 or @165: /d1/zhanghaili/spider_redis/ (目前处在哪台机器上请查看最新的settings.py)
 
 	* redis配置文件中的maxclients的默认值为10000，可根据系统需要自行增加，比如现在为100000
 	
