@@ -24,7 +24,7 @@ pg 的一些资源：
 * Elixir：较新，目前刚刚发布1.0版本，基于erlang vm、函数式编程、支持分布式等特性。 
 * C：一直想好好学的，编译型语言。做网络编程必须的语言，为以后的职业目标“高并发网络编程”做准备。
     
- [Dave Thomas](http://en.wikipedia.org/wiki/Dave_Thomas_(programmer\)) 相当推崇[Elixir](http://elixir-lang.org/)这一语言。
+Dave Thomas相当推崇[Elixir](http://elixir-lang.org/)这一语言。
 
 最近还发现了[MacRuby](http://macruby.org/)，之前一直比较热衷于为os X开发软件，但是又不想学Object-C，现在看来学好ruby之后也可以做了。
 
