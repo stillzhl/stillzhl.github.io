@@ -23,7 +23,7 @@ title: MySQL Operation
     shell> cd /usr/local/mysql
     shell> chown -R mysql .
     shell> chgrp -R mysql .
-    shell> bin/mysql_install_db --user=mysql
+    shell> scripts/mysql_install_db --user=mysql
     shell> chown -R root .
     shell> chown -R mysql data
 
