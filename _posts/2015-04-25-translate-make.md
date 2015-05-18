@@ -48,7 +48,18 @@ title: Make 详解（译文）
 
 对于make的多种实现，我只使用GNU Make，还有当我批评GNU Make的某些特性时，我会用到一些GNU的扩展，这些扩展和BSD的版本不一样，例如 $(patsubst ...)。然而基础的概念对于BSD的make实现都是一样的，并且这还会让你对于他们有一个比较好的了解，使得你能够在任何还在使用unix/make的系统上debug和创建合适的Makefile。
 
+### 回顾make
+你也许会觉得Makefiles会是下面这样（这是我故意写的一个烂例子）：
 
+```
+# subroutine def subroutine call another subroutine call 
+#     v            v            vinstall: install-doc build-binary	install binary $(bindir)/	mkdir -p $(datadir)/myprog/	cp -r images $(datadir)/myprog/#       ^#       body of subroutine
+```
+这是make的一项规则，"install"即是构建的目标，它的依赖是"install-doc"和"build-binary"，其他部分就是构建需要的命令步骤，这些命令以tab作为缩紧。tab在make里边比较特别。一个tab只能用来缩紧命令步骤，没有其他的用途。
+This model obscures the property that "install-doc" and "build-binary" could heappen in parallel with each other if make is invoked with "-j2". It also obscures some ways in which unnecessary work could be avoided, and that this rule might not run if a local file named "install" was accidentally created.
+Makefiles 应该更像是一张依赖关系的图谱，而不是一个脚本。这张图谱中的大部分节点都是文件。脚本片段将这些节点联系到一起。我将整个的图谱看作一种架构在人为编辑的源文件之上的结构，这个通过横梁和街头建立起来的结构支持在特定的位置输出特定的文件。通过改变某个变量整个机构立即重新配置以支持不同位置的不同的输出，尽可能的重用结构中现有的部分。当我意识到这种机制的健壮性和高效性时，我发现make是一个很不错的工具。
+
+一开始我将强调指出图谱这种机制，之后我马上就会介绍一个make特性的精选集，这些特性很简洁而优雅。同时，我会告诉你“你不能这样做”
 
 
 
